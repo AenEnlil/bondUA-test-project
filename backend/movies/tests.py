@@ -16,18 +16,32 @@ class MovieTestCase(APITestCase):
             movies.append(cls.model(title=f'Movie_{i}', release_date=datetime.datetime.now().date()))
         cls.model.objects.bulk_create(movies)
 
+    def test_list_paginated(self):
+        url = reverse('movie-list')
+        movies_count = self.model.objects.all().count()
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        response_data = response.data
+        self.assertTrue(response_data)
+        self.assertIn('count', response_data)
+        self.assertIn('next', response_data)
+        self.assertIn('previous', response_data)
+        self.assertIn('results', response_data)
+        self.assertEqual(response_data.get('count'), movies_count)
+        self.assertTrue(response_data.get('next'))
+        self.assertFalse(response_data.get('previous'))
+
     def test_list(self):
         url = reverse('movie-list')
         first_existed_movie = self.model.objects.first()
-        movies_count = self.model.objects.all().count()
 
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
         response_data = response.data
         self.assertTrue(response_data)
-        self.assertEqual(len(response_data), movies_count)
-        self.assertEqual(first_existed_movie.id, response_data[0].get('id'))
+        self.assertEqual(first_existed_movie.id, response_data.get('results')[0].get('id'))
 
     def test_create(self):
         movie_name = 'NewMovie'

@@ -14,18 +14,32 @@ class PersonTestCase(APITestCase):
             persons.append(cls.model(name=f'Name_{i}'))
         cls.model.objects.bulk_create(persons)
 
+    def test_list_paginated(self):
+        url = reverse('person-list')
+        persons_count = self.model.objects.all().count()
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        response_data = response.data
+        self.assertTrue(response_data)
+        self.assertIn('count', response_data)
+        self.assertIn('next', response_data)
+        self.assertIn('previous', response_data)
+        self.assertIn('results', response_data)
+        self.assertEqual(response_data.get('count'), persons_count)
+        self.assertTrue(response_data.get('next'))
+        self.assertFalse(response_data.get('previous'))
+
     def test_list(self):
         url = reverse('person-list')
         first_existed_person = self.model.objects.first()
-        persons_count = self.model.objects.all().count()
 
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
         response_data = response.data
         self.assertTrue(response_data)
-        self.assertEqual(len(response_data), persons_count)
-        self.assertEqual(first_existed_person.id, response_data[0].get('id'))
+        self.assertEqual(first_existed_person.id, response_data.get('results')[0].get('id'))
 
     def test_create(self):
         person_name = 'Test Person'
