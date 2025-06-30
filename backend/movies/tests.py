@@ -7,7 +7,6 @@ from .models import Movie
 
 class MovieTestCase(APITestCase):
     model = Movie
-    number_of_movies_to_create = 40
 
     @classmethod
     def setUpTestData(cls):
