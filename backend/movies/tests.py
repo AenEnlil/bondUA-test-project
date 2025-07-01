@@ -1,8 +1,10 @@
 import datetime
+import json
 
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 from .models import Movie
+from movie_persons.models import MoviePerson, Person
 
 
 class MovieTestCase(APITestCase):
@@ -13,8 +15,9 @@ class MovieTestCase(APITestCase):
         number_of_movies_to_create = 40
         movies = []
         for i in range(0, number_of_movies_to_create):
-            movies.append(cls.model(title=f'Movie_{i}', release_date=datetime.datetime.now().date()))
+            movies.append(cls.model(title=f'Movie_{i}', release_year=datetime.datetime.now().date().year))
         cls.model.objects.bulk_create(movies)
+        cls.test_person = Person.objects.create(name='test')
 
     def test_list_paginated(self):
         url = reverse('movie-list')
@@ -45,9 +48,10 @@ class MovieTestCase(APITestCase):
 
     def test_create(self):
         movie_name = 'NewMovie'
-        data = {'title': movie_name, 'release_date': datetime.datetime.now().date()}
+        data = {'title': movie_name, 'release_year': datetime.datetime.now().date().year,
+                'cast': []}
         url = reverse('movie-list')
-        response = self.client.post(url, data=data)
+        response = self.client.post(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 201)
 
         response_data = response.data
@@ -56,6 +60,29 @@ class MovieTestCase(APITestCase):
         movie_in_db = self.model.objects.get(id=response_data.get('id'))
         self.assertTrue(movie_in_db)
         self.assertEqual(movie_in_db.title, movie_name)
+
+    def test_links_created(self):
+        self.assertFalse(MoviePerson.objects.all().exists())
+        movie_name = 'NewMovie'
+        data = {'title': movie_name, 'release_year': datetime.datetime.now().date().year,
+                'cast': [{'person_id': self.test_person.id, 'role': 'director'},
+                         {'person_id': self.test_person.id, 'role': 'actor'}]}
+        url = reverse('movie-list')
+        response = self.client.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+
+        response_data = response.data
+        self.assertTrue(response_data)
+        self.assertTrue(MoviePerson.objects.all().exists())
+        links = MoviePerson.objects.filter(movie_id=response_data.get('id'))
+        self.assertTrue(links)
+        self.assertEqual(len(data.get('cast')), len(links))
+
+        person_data = data.get('cast')[0]
+        self.assertEqual(person_data.get('person_id'), links[0].person_id)
+        self.assertEqual(person_data.get('role'), links[0].role)
+
+
 
     def test_retrieve(self):
         first_existed_movie = self.model.objects.first()
