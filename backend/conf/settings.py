@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'movies',
     'movie_persons',
     'rest_framework',
+    'django_filters',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

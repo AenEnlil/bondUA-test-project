@@ -46,6 +46,57 @@ class MovieTestCase(APITestCase):
         self.assertTrue(response_data)
         self.assertEqual(first_existed_movie.id, response_data.get('results')[0].get('id'))
 
+    def test_list_filter_by_release_year(self):
+        release_year = 2012
+        movie = self.model.objects.create(title='NewFilm1', release_year=release_year)
+        movies_count = self.model.objects.count()
+        self.assertTrue(movie)
+        url = reverse('movie-list', query={'release_year': release_year})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        response_data = response.data
+        self.assertTrue(response_data)
+        self.assertNotEqual(movies_count, response_data.get('count'))
+        self.assertEqual(movie.pk, response_data['results'][0].get('id'))
+        self.assertEqual(movie.release_year, response_data['results'][0].get('release_year'))
+
+    def test_list_filter_by_director(self):
+        movie = self.model.objects.create(title='NewFilm1', release_year=2025)
+        MoviePerson.objects.create(person=self.test_person, movie=movie, role='director')
+        movies_count = self.model.objects.count()
+        self.assertTrue(movie)
+        url = reverse('movie-list', query={'director': self.test_person.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        response_data = response.data
+        self.assertTrue(response_data)
+        self.assertNotEqual(movies_count, response_data.get('count'))
+        self.assertEqual(movie.pk, response_data['results'][0].get('id'))
+        cast = response_data['results'][0].get('cast')
+        self.assertTrue(cast)
+        self.assertEqual(cast[0].get('person_id'), self.test_person.id)
+        self.assertEqual(cast[0].get('role'), 'director')
+
+    def test_list_filter_by_actor(self):
+        movie = self.model.objects.create(title='NewFilm1', release_year=2025)
+        MoviePerson.objects.create(person=self.test_person, movie=movie, role='actor')
+        movies_count = self.model.objects.count()
+        self.assertTrue(movie)
+        url = reverse('movie-list', query={'actor': self.test_person.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        response_data = response.data
+        self.assertTrue(response_data)
+        self.assertNotEqual(movies_count, response_data.get('count'))
+        self.assertEqual(movie.pk, response_data['results'][0].get('id'))
+        cast = response_data['results'][0].get('cast')
+        self.assertTrue(cast)
+        self.assertEqual(cast[0].get('person_id'), self.test_person.id)
+        self.assertEqual(cast[0].get('role'), 'actor')
+
     def test_create(self):
         movie_name = 'NewMovie'
         data = {'title': movie_name, 'release_year': datetime.datetime.now().date().year,
