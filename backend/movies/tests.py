@@ -133,7 +133,53 @@ class MovieTestCase(APITestCase):
         self.assertEqual(person_data.get('person_id'), links[0].person_id)
         self.assertEqual(person_data.get('role'), links[0].role)
 
+    def test_duplicate_cast_entries_are_removed(self):
+        movie_name = 'NewMovie'
+        data = {'title': movie_name, 'release_year': datetime.datetime.now().date().year,
+                'cast': [{'person_id': self.test_person.id, 'role': 'actor'},
+                         {'person_id': self.test_person.id, 'role': 'actor'}]}
+        url = reverse('movie-list')
+        response = self.client.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 201)
 
+        response_data = response.data
+        self.assertTrue(response_data)
+        self.assertEqual(len(response_data['cast']), 1)
+
+    def test_error_when_invalid_release_year(self):
+        movie_name = 'NewMovie'
+        data = {'title': movie_name, 'release_year': 1111,
+                'cast': []}
+        url = reverse('movie-list')
+        response = self.client.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+
+        response_data = response.data
+        self.assertTrue(response_data.get('release_year'))
+
+    def test_error_when_person_not_exists(self):
+        movie_name = 'NewMovie'
+        data = {'title': movie_name, 'release_year': datetime.datetime.now().date().year,
+                'cast': [{'person_id': 999, 'role': 'actor'}]}
+        url = reverse('movie-list')
+        response = self.client.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+
+        response_data = response.data
+        self.assertTrue(response_data.get('cast'))
+
+    def test_error_when_several_directors_passed(self):
+        person2 = Person.objects.create(name='testperson2')
+        movie_name = 'NewMovie'
+        data = {'title': movie_name, 'release_year': datetime.datetime.now().date().year,
+                'cast': [{'person_id': self.test_person.id, 'role': 'director'},
+                         {'person_id': person2.id, 'role': 'director'}]}
+        url = reverse('movie-list')
+        response = self.client.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+
+        response_data = response.data
+        self.assertTrue(response_data.get('cast'))
 
     def test_retrieve(self):
         first_existed_movie = self.model.objects.first()

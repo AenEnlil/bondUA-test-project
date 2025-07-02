@@ -1,3 +1,5 @@
+from datetime import date
+from collections import Counter
 from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import ValidationError
 from .models import Movie
@@ -11,6 +13,16 @@ class MovieSerializer(ModelSerializer):
     class Meta:
         model = Movie
         fields = ['id', 'title', 'release_year', 'cast']
+
+    def _clean_cast_field_from_duplicates(self, data):
+        seen = set()
+        cleaned = []
+        for item in data:
+            key = (item['person_id'], item['role'])
+            if key not in seen:
+                seen.add(key)
+                cleaned.append(item)
+        return cleaned
 
     def _update_movie_person_relations(self, instance, data):
         new_links = {(person.get('person_id'), person.get('role')): person for person in data}
@@ -29,14 +41,30 @@ class MovieSerializer(ModelSerializer):
         if links_to_remove:
             MoviePerson.objects.filter(id__in=links_to_remove).delete()
 
+    def validate_release_year(self, value):
+        year_shift = 15
+        min_year, max_year = 1896, date.today().year + year_shift
+        if value > max_year:
+            raise ValidationError(f"release year can`t be higher than {max_year}")
+        elif value < min_year:
+            raise ValidationError(f"release year can`t be lower than {min_year}")
+        return value
+
     def validate_cast(self, data):
+        cleaned_data = self._clean_cast_field_from_duplicates(data)
+
+        # validate that movie have one director
+        roles_count = Counter([item.get('role') for item in cleaned_data])
+        if roles_count.get('director', 0) > 1:
+            raise ValidationError('Movie can have only one director')
+
         # validate person ids in bulk to optimize db queries
-        person_ids = [person.get('person_id') for person in data]
+        person_ids = [person.get('person_id') for person in cleaned_data]
         persons_in_db = Person.objects.in_bulk(person_ids)
         missing_ids = set(person_ids) - set(persons_in_db)
         if missing_ids:
             raise ValidationError(f'Invalid person_id(s): {missing_ids}')
-        return data
+        return cleaned_data
 
     def create(self, validated_data):
         cast_data = validated_data.pop('movieperson_set')
