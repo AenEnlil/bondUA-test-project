@@ -18,14 +18,47 @@
                 </ul>
             </div>
         </div>
+        <div>
+            <label>Director: </label>
+            <Multiselect
+                v-model="form.director"
+                :options="persons"
+                :searchable="true"
+                :close-on-select="true"
+                :show-labels="false"
+                label="name"
+                track-by="id"
+                placeholder="Select a director"
+            />
+        </div>
+        <div>
+            <label>Actors:</label>
+            <Multiselect
+                v-model="form.actors"
+                :options="persons"
+                :multiple="true"
+                :searchable="true"
+                :close-on-select="false"
+                :clear-on-select="false"
+                :preserve-search="true"
+                label="name"
+                track-by="id"
+                placeholder="Select actors"
+            />
+        </div>
         <button class="form-button" type="submit"> Send </button>
         <button class="form-button cancel" type="button" @click="$emit('cancel')"> Cancel </button>
     </form>
 </template>
 <script>
+    import Multiselect from 'vue-multiselect'
+    import 'vue-multiselect/dist/vue-multiselect.min.css'
     import api from '@/services/api.js'
     export default {
         name: 'MovieForm',
+        components: {
+            Multiselect,
+        },
         props: {
             onSubmit: Function,
         },
@@ -35,7 +68,8 @@
                 form: {
                     title: '',
                     release_year: '',
-                    cast: [],
+                    director: null,
+                    actors: [],
                 },
                 errors: {},
             }
@@ -48,12 +82,28 @@
                 const response = await api.get('/movie-persons/')
                 this.persons = response.data.results
             },
+            prepareCast() {
+                const temp = []
+                if (this.form.director) {
+                    temp.push({'person_id': this.form.director.id, 'role': 'director'})
+                }
+                if (this.form.actors) {
+                    for (const actor of this.form.actors) {
+                        temp.push({'person_id': actor.id, 'role': 'actor'})
+                    }
+                }
+                return temp
+            },
             async handleSubmit() {
                 this.errors = {}
                 try {
                     if (this.onSubmit) {
-                            let payload
-                            payload = {...this.form}
+                            const cast = this.prepareCast()
+                            const payload = {
+                                title: this.form.title,
+                                release_year: this.form.release_year,
+                                cast: cast
+                            }
                             await this.onSubmit(payload)
                         }
                     this.clearForm()
@@ -65,6 +115,8 @@
               this.form = {
                 title: '',
                 release_year: '',
+                director: null,
+                actors: [],
               }
             },
         },
