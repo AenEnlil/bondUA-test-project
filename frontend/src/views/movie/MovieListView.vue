@@ -28,10 +28,8 @@
             </div>
         </div>
     </div>
-    <div v-if="showModal" class="modal-overlay">
-        <div class="modal-content">
-            <MovieForm :onSubmit="createMovie" @cancel="showModal = false"/>
-        </div>
+    <div v-if="showModal">
+        <MovieFormModal :onSubmit="createMovie" @cancel="showModal = false"/>
     </div>
 </template>
 
@@ -39,13 +37,13 @@
   import api from '@/services/api.js'
   import Loader from '@/components/Loader.vue'
   import Movie from '@/components/Movie.vue'
-  import MovieForm from '@/components/MovieForm.vue'
+  import MovieFormModal from '@/components/MovieFormModal.vue'
   export default {
     name: 'MovieList',
     components: {
         Loader,
         Movie,
-        MovieForm,
+        MovieFormModal,
     },
     data() {
         return {
@@ -125,21 +123,5 @@
         grid-cols: 2px;
         gap: 4px;
         p: 4px;
-    }
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    .modal-content {
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
     }
 </style>

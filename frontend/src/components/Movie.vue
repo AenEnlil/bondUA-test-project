@@ -28,6 +28,11 @@
 <script>
 import api from '@/services/api.js'
 export default {
+  data() {
+    return {
+        showModal: false
+    }
+  },
   props: {
     movie: {
       type: Object,
