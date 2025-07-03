@@ -25,7 +25,12 @@
                 <div class="create-movie-button">
                     <button @click="showModalWithForm">Add movie</button>
                 </div>
-     </div>
+            </div>
+        </div>
+    </div>
+    <div v-if="showModal" class="modal-overlay">
+        <div class="modal-content">
+            <MovieForm :onSubmit="createMovie" @cancel="showModal = false"/>
         </div>
     </div>
 </template>
@@ -34,11 +39,13 @@
   import api from '@/services/api.js'
   import Loader from '@/components/Loader.vue'
   import Movie from '@/components/Movie.vue'
+  import MovieForm from '@/components/MovieForm.vue'
   export default {
     name: 'MovieList',
     components: {
         Loader,
         Movie,
+        MovieForm,
     },
     data() {
         return {
@@ -83,6 +90,17 @@
           this.fetchMovies({url: this.previous_page})
          }
         },
+        async createMovie(formData) {
+            try {
+                await api.post('/movies/', formData)
+                this.showModal = false
+            } catch (error) {
+                if (error.response && error.response.data) {
+                    return Promise.reject(error.response.data)
+                }
+                console.log("Error while creating comment", error)
+            }
+        },
     },
     }
 
@@ -107,5 +125,21 @@
         grid-cols: 2px;
         gap: 4px;
         p: 4px;
+    }
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
     }
 </style>
