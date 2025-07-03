@@ -30,6 +30,11 @@
                 track-by="id"
                 placeholder="Select a director"
             />
+            <div v-if="errors.director">
+                <ul>
+                    <li v-for="(error, index) in errors.director" :key="index"> {{error}} </li>
+                </ul>
+            </div>
         </div>
         <div>
             <label>Actors:</label>
@@ -45,6 +50,11 @@
                 track-by="id"
                 placeholder="Select actors"
             />
+            <div v-if="errors.actors">
+                <ul>
+                    <li v-for="(error, index) in errors.actors" :key="index"> {{error}} </li>
+                </ul>
+            </div>
         </div>
         <button class="form-button" type="submit"> Send </button>
         <button class="form-button cancel" type="button" @click="$emit('cancel')"> Cancel </button>
@@ -96,6 +106,12 @@
             },
             async handleSubmit() {
                 this.errors = {}
+                if (!this.form.director) {
+                    this.errors.director = ['Please select a director'] }
+                if (!this.form.actors || this.form.actors.length === 0) {
+                    this.errors.actors = ['Please select at least one actor'] }
+                if (Object.keys(this.errors).length > 0) {
+                    return }
                 try {
                     if (this.onSubmit) {
                             const cast = this.prepareCast()
