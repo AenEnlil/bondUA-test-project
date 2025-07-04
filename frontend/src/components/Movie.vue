@@ -4,6 +4,7 @@
         <p>{{movie.id}}</p>
         <h2 class="text-xl font-bold">{{ movie.title }}</h2>
         <svg
+            @click="showModal = true"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 32 32"
             class='button-icons'>
@@ -23,11 +24,19 @@
       <p>detailed</p>
     </div>
   </div>
+  <div v-if="showModal">
+    <MovieFormModal :onSubmit="updateMovie" :movie="movie" @cancel="showModal = false"/>
+  </div>
 </template>
 
 <script>
 import api from '@/services/api.js'
+import MovieFormModal from '@/components/MovieFormModal.vue'
 export default {
+  components: {
+    MovieFormModal
+  },
+  emits: ['deleted'],
   data() {
     return {
         showModal: false
@@ -51,6 +60,14 @@ export default {
       } catch (err) {
         console.error('Error while deleting movie:', err)
       }
+    },
+    async updateMovie(payload) {
+        try {
+            await api.patch(`/movies/${this.movie.id}/`, payload)
+            this.showModal = false
+        } catch (err) {
+            console.error('Error while deleting movie:', err)
+        }
     },
   },
 };

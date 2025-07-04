@@ -1,7 +1,7 @@
 <template>
 <div class="modal-overlay">
     <div class="modal-content">
-        <MovieForm :onSubmit="onSubmit" @cancel="handleCancel"/>
+        <MovieForm :onSubmit="onSubmit" :movie="movie" @cancel="handleCancel"/>
     </div>
 </div>
 </template>
@@ -12,8 +12,13 @@ export default {
     components: {
         MovieForm
     },
+    emits: ['cancel'],
     props: {
         onSubmit: Function,
+        movie: {
+            type: Object,
+            default: null,
+        }
     },
     methods: {
         handleCancel() {

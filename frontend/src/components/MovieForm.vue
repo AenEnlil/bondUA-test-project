@@ -71,6 +71,10 @@
         },
         props: {
             onSubmit: Function,
+            movie: {
+                type: Object,
+                default: null,
+            }
         },
         data() {
             return {
@@ -86,11 +90,27 @@
         },
         mounted() {
             this.fetchPersons()
+            if (this.movie) {
+                this.setFormFromMovie(this.movie)
+            }
         },
         methods: {
             async fetchPersons(){
                 const response = await api.get('/movie-persons/')
                 this.persons = response.data.results
+            },
+            setFormFromMovie(movie) {
+                this.form.title = movie.title || ''
+                this.form.release_year = movie.release_year || ''
+
+                if (movie.cast) {
+                    this.form.director = movie.cast
+                        .filter(p => p.role === 'director')
+                        .map(p => ({'id': p.person_id, 'name': p.person_name}))[0] || null
+                    this.form.actors = movie.cast
+                        .filter(p => p.role === 'actor')
+                        .map(p => ({'id': p.person_id, 'name': p.person_name}))
+                }
             },
             prepareCast() {
                 const temp = []
