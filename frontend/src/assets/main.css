@@ -1,0 +1,17 @@
+* {
+    box-sizing: border-box;
+    margin: 0px;
+    padding: 0px;
+    font-family: sans-serif;
+}
+
+body {
+    background-color: #444;
+}
+
+#app {
+    width: 1300px;
+    margin: 0 auto;
+    background-color: #999;
+    min-height: 100vh;
+}

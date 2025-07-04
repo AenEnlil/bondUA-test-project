@@ -1,8 +1,28 @@
 <template>
-  <div class="bg-white rounded-xl shadow p-4">
-    <div class='movie-header'>
-        <p>{{movie.id}}</p>
+  <div class="movie-card">
+    <div>
+        <img class="movie-poster" src="../assets/images/movie-placeholder.jpeg">
+    </div>
+    <div class='movie-info'>
         <h2 class="text-xl font-bold">{{ movie.title }}</h2>
+        <p class="year-text">{{ movie.release_year }}</p>
+        <p class="director-text">Director: {{ director?.person_name || 'N/A' }}</p>
+
+        <div v-if="actors.length !== 0" class="actors-dropdown">
+            <details>
+                <summary>Actors</summary>
+                <ul class="actors-list">
+                    <li v-for="actor in actors" :key="actor.id">
+                        <div class='actor-info'>
+                            <img src="../assets/images/person-placeholder.jpg">
+                            {{actor.person_name}}
+                        </div>
+                    </li>
+                </ul>
+            </details>
+        </div>
+    </div>
+    <div class='movie-buttons'>
         <svg
             @click="showModal = true"
             xmlns="http://www.w3.org/2000/svg"
@@ -17,19 +37,6 @@
             class='button-icons'>
             <path d="M 24 4 C 20.704135 4 18 6.7041348 18 10 L 11.746094 10 A 1.50015 1.50015 0 0 0 11.476562 9.9785156 A 1.50015 1.50015 0 0 0 11.259766 10 L 7.5 10 A 1.50015 1.50015 0 1 0 7.5 13 L 10 13 L 10 38.5 C 10 41.519774 12.480226 44 15.5 44 L 32.5 44 C 35.519774 44 38 41.519774 38 38.5 L 38 13 L 40.5 13 A 1.50015 1.50015 0 1 0 40.5 10 L 36.746094 10 A 1.50015 1.50015 0 0 0 36.259766 10 L 30 10 C 30 6.7041348 27.295865 4 24 4 z M 24 7 C 25.674135 7 27 8.3258652 27 10 L 21 10 C 21 8.3258652 22.325865 7 24 7 z M 13 13 L 35 13 L 35 38.5 C 35 39.898226 33.898226 41 32.5 41 L 15.5 41 C 14.101774 41 13 39.898226 13 38.5 L 13 13 z M 20.476562 17.978516 A 1.50015 1.50015 0 0 0 19 19.5 L 19 34.5 A 1.50015 1.50015 0 1 0 22 34.5 L 22 19.5 A 1.50015 1.50015 0 0 0 20.476562 17.978516 z M 27.476562 17.978516 A 1.50015 1.50015 0 0 0 26 19.5 L 26 34.5 A 1.50015 1.50015 0 1 0 29 34.5 L 29 19.5 A 1.50015 1.50015 0 0 0 27.476562 17.978516 z"/>
         </svg>
-    </div>
-    <p class="text-sm text-gray-500">Release year: {{ movie.release_year }}</p>
-    <p>Director: {{ director?.person_name || 'N/A' }}</p>
-
-    <div v-if="actors.length !== 0" class="actors-dropdown">
-        <details>
-            <summary>Actors</summary>
-            <ul class="actors-list">
-                <li v-for="actor in actors" :key="actor.id">
-                    {{actor.person_name}}
-                </li>
-            </ul>
-        </details>
     </div>
 
     <div v-if="mode === 'detailed'" class="mt-2 text-gray-700">
@@ -99,10 +106,16 @@ export default {
         height: 16px;
         cursor: pointer;
     }
-    .actor-dropdown details {
+    .actors-dropdown {
+        padding-top: 10px;
+    }
+    .actors-dropdown details {
         width: 100%;
         cursor: pointer;
         margin-bottom: 1rem;
+    }
+    .actors-dropdown details summary:hover {
+        text-decoration: underline;
     }
     .actors-list {
         display: flex;
@@ -113,9 +126,55 @@ export default {
         list-style: none;
     }
     .actors-list li {
-        background: #f2f2f2;
-        padding: 0.5rem 1rem;
+        padding: 0.5rem 0.5rem;
         border-radius: 5px;
         flex: 0 0 auto;
     }
+    .movie-card {
+        display: flex;
+        position: relative;
+        margin-top: 30px;
+        margin-left: 80px;
+    }
+    .movie-poster {
+        width: 150px;
+    }
+    .movie-info {
+        margin-left: 30px;
+    }
+    h2 {
+        font-size: 30px;
+        font-weight: normal;
+    }
+    .year-text {
+        color: #444;
+    }
+    .director-text {
+        padding-top: 15px;
+    }
+    .actor-info {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        justify-content: center;
+        align-items: center;
+    }
+    .actor-info img {
+        width: 50px;
+        border-radius: 20%;
+    }
+    .movie-buttons {
+        left: 950px;
+        top: -700px;
+        display: flex;
+        gap: 5px;
+    }
+    .movie-buttons svg {
+        width: 35px;
+        height: 60px;
+    }
+    .movie-buttons svg:hover {
+        fill: #c7ecee;
+    }
+
 </style>

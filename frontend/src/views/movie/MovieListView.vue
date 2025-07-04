@@ -153,4 +153,13 @@
         gap: 4px;
         p: 4px;
     }
+    .pagination {
+        padding-top: 50px;
+        padding-bottom: 50px;
+        text-align: center;
+    }
+    .pagination button {
+        width: 100px;
+        font-size: 16px;
+    }
 </style>
