@@ -15,6 +15,7 @@
                     :movie='movie'
                     mode='list'
                     @deleted='removeMovie'
+                    @updated='handleUpdate'
                 />
             </div>
             <div class="buttons">
@@ -77,6 +78,12 @@
         },
         removeMovie(id) {
           this.movies = this.movies.filter(m => m.id !== id)
+        },
+        handleUpdate(updatedMovie) {
+          const index = this.movies.findIndex(m => m.id === updatedMovie.id)
+          if (index !== -1) {
+            this.movies.splice(index, 1, updatedMovie)
+          }
         },
         goToNextPage() {
          if (this.next_page) {

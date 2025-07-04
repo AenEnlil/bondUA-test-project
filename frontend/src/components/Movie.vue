@@ -36,7 +36,7 @@ export default {
   components: {
     MovieFormModal
   },
-  emits: ['deleted'],
+  emits: ['deleted', 'updated'],
   data() {
     return {
         showModal: false
@@ -63,8 +63,9 @@ export default {
     },
     async updateMovie(payload) {
         try {
-            await api.patch(`/movies/${this.movie.id}/`, payload)
+            const response = await api.patch(`/movies/${this.movie.id}/`, payload)
             this.showModal = false
+            this.$emit('updated', response.data)
         } catch (err) {
             console.error('Error while deleting movie:', err)
         }
