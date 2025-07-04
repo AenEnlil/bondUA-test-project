@@ -1,5 +1,5 @@
 <template>
-    <form @submit.prevent="handleSubmit" class="comment-form">
+    <form @submit.prevent="handleSubmit" class="movie-form">
         <div>
             <label>Title: </label>
             <input type="text" v-model="form.title" required />
