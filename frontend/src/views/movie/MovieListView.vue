@@ -119,8 +119,10 @@
         },
         async createMovie(formData) {
             try {
-                await api.post('/movies/', formData)
+                const response = await api.post('/movies/', formData)
                 this.showModal = false
+                this.movies.push(response.data)
+                if (this.movies_count === 0) {this.movies_count = 1}
             } catch (error) {
                 if (error.response && error.response.data) {
                     return Promise.reject(error.response.data)
