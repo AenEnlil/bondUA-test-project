@@ -2,6 +2,7 @@ import json
 from datetime import date
 from collections import Counter
 
+from django.conf import settings
 from django.http import QueryDict
 from rest_framework.serializers import ModelSerializer, ImageField
 from rest_framework.serializers import ValidationError
@@ -54,6 +55,14 @@ class MovieSerializer(ModelSerializer):
             values = data.getlist(key)
             result[key] = values if len(values) > 1 else values[0]
         return result
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+
+        # form absolute url to image for docker frontend container
+        if instance.poster:
+            representation['poster'] = f'{settings.MEDIA_URL_BASE}{instance.poster.url}'
+        return representation
 
     def to_internal_value(self, data):
         """
