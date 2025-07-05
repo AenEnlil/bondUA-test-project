@@ -1,7 +1,7 @@
 <template>
   <div class="movie-card">
     <div>
-        <img class="movie-poster" src="../assets/images/movie-placeholder.jpeg">
+        <img class="movie-poster" :src="posterUrl">
     </div>
     <div class='movie-info'>
         <h2 class="text-xl font-bold">{{ movie.title }}</h2>
@@ -50,6 +50,7 @@
 
 <script>
 import api from '@/services/api.js'
+import placeholderImage from '@/assets/images/movie-placeholder.jpeg'
 import MovieFormModal from '@/components/MovieFormModal.vue'
 export default {
   components: {
@@ -78,6 +79,9 @@ export default {
     actors() {
         return this.movie.cast.filter(person => person.role === 'actor')
     },
+    posterUrl() {
+        return this.movie.poster || placeholderImage
+    }
   },
   methods: {
     async deleteMovie() {

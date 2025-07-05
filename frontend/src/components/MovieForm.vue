@@ -56,6 +56,15 @@
                 </ul>
             </div>
         </div>
+        <div>
+            <label>Attach poster: </label>
+            <input type="file" ref="imageInput" accept="image/jpeg,image/png,image/gif" @change="handleImageUpload"/>
+            <div v-if="errors.image">
+                <ul>
+                    <li v-for="(error, index) in errors.image" :key="index"> {{error}} </li>
+                </ul>
+            </div>
+        </div>
         <button class="form-button" type="submit"> Send </button>
         <button class="form-button cancel" type="button" @click="$emit('cancel')"> Cancel </button>
     </form>
@@ -99,6 +108,10 @@
                 const response = await api.get('/movie-persons/')
                 this.persons = response.data.results
             },
+            handleImageUpload(event) {
+                const image = event.target.files[0]
+                this.form.poster = image
+            },
             setFormFromMovie(movie) {
                 this.form.title = movie.title || ''
                 this.form.release_year = movie.release_year || ''
@@ -124,6 +137,24 @@
                 }
                 return temp
             },
+            preparePayload() {
+                let data
+                const cast = this.prepareCast()
+                if (this.form.poster) {
+                    data = new FormData()
+                    data.append('title', this.form.title)
+                    data.append('release_year', this.form.release_year)
+                    data.append('cast', JSON.stringify(cast))
+                    data.append('poster', this.form.poster)
+                } else {
+                    data = {
+                        title: this.form.title,
+                        release_year: this.form.release_year,
+                        cast: cast
+                    }
+                }
+                return data
+            },
             async handleSubmit() {
                 this.errors = {}
                 if (!this.form.director) {
@@ -134,12 +165,7 @@
                     return }
                 try {
                     if (this.onSubmit) {
-                            const cast = this.prepareCast()
-                            const payload = {
-                                title: this.form.title,
-                                release_year: this.form.release_year,
-                                cast: cast
-                            }
+                            const payload = this.preparePayload()
                             await this.onSubmit(payload)
                         }
                     this.clearForm()
@@ -153,6 +179,7 @@
                 release_year: '',
                 director: null,
                 actors: [],
+                poster: null
               }
             },
         },
