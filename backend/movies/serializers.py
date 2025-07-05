@@ -1,5 +1,8 @@
+import json
 from datetime import date
 from collections import Counter
+
+from django.http import QueryDict
 from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import ValidationError
 from .models import Movie
@@ -40,6 +43,32 @@ class MovieSerializer(ModelSerializer):
         links_to_remove = [link.id for link in existing_links.values()]
         if links_to_remove:
             MoviePerson.objects.filter(id__in=links_to_remove).delete()
+
+    def _querydict_to_dict(self, data: QueryDict) -> dict:
+        """
+        Transform QueryDict to python dictionary
+        """
+        result = {}
+        for key in data:
+            values = data.getlist(key)
+            result[key] = values if len(values) > 1 else values[0]
+        return result
+
+    def to_internal_value(self, data):
+        """
+        Extends behaviour to support form-data with nested structures. If request.data is QueryDict,
+        then it will be transformed to python dict and 'cast' field will be transformed from str to list
+        """
+        if isinstance(data, QueryDict):
+            data = self._querydict_to_dict(data)
+            cast = data.get('cast')
+            if isinstance(cast, str):
+                try:
+                    data['cast'] = json.loads(cast)
+                except json.JSONDecodeError:
+                    raise ValidationError({'cast': 'Invalid JSON'})
+
+        return super().to_internal_value(data)
 
     def validate_release_year(self, value):
         year_shift = 15
