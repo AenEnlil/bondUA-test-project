@@ -3,7 +3,7 @@ from datetime import date
 from collections import Counter
 
 from django.http import QueryDict
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, ImageField
 from rest_framework.serializers import ValidationError
 from .models import Movie
 from movie_persons.serializers import MoviePersonSerializer
@@ -12,10 +12,11 @@ from movie_persons.models import MoviePerson, Person
 
 class MovieSerializer(ModelSerializer):
     cast = MoviePersonSerializer(source='movieperson_set', many=True)
+    poster = ImageField(required=False)
 
     class Meta:
         model = Movie
-        fields = ['id', 'title', 'release_year', 'cast']
+        fields = ['id', 'title', 'release_year', 'poster', 'cast']
 
     def _clean_cast_field_from_duplicates(self, data):
         seen = set()
