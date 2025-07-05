@@ -1,12 +1,16 @@
 import datetime
 import json
 
+from django.test import override_settings
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 from .models import Movie
 from movie_persons.models import MoviePerson, Person
 
+caches = {"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache", }}
 
+
+@override_settings(CACHES=caches)
 class MovieTestCase(APITestCase):
     model = Movie
 

@@ -130,8 +130,22 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CORS settings
 CORS_ALLOWED_ORIGINS = ['http://localhost:5173', 'http://localhost:8000']
 
+# Cache settings
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": f'{os.getenv("REDIS_URL")}/0'
+    }
+}
+
 # Rest framework
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': os.getenv('PAGE_SIZE', 25)
+    'PAGE_SIZE': os.getenv('PAGE_SIZE', 25),
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '30/m',
+    }
 }

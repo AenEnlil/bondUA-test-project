@@ -1,8 +1,12 @@
+from django.test import override_settings
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 from .models import Person
 
+caches = {"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache", }}
 
+
+@override_settings(CACHES=caches)
 class PersonTestCase(APITestCase):
     model = Person
 
