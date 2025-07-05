@@ -2,7 +2,7 @@
     <form @submit.prevent="handleSubmit" class="movie-form">
         <div>
             <label>Title: </label>
-            <input type="text" v-model="form.title" required />
+            <input class='input' type="text" v-model="form.title" required />
             <div v-if="errors.title">
                 <ul>
                     <li v-for="(error, index) in errors.title" :key="index"> {{error}} </li>
@@ -11,7 +11,7 @@
         </div>
         <div>
             <label>Release Year: </label>
-            <input type="number" v-model="form.release_year" required />
+            <input class='input' type="number" v-model="form.release_year" required />
             <div v-if="errors.release_year">
                 <ul>
                     <li v-for="(error, index) in errors.release_year" :key="index"> {{error}} </li>
@@ -65,8 +65,10 @@
                 </ul>
             </div>
         </div>
-        <button class="form-button" type="submit"> Send </button>
-        <button class="form-button cancel" type="button" @click="$emit('cancel')"> Cancel </button>
+        <div class='buttons-container'>
+            <button class="form-button" type="submit"> Send </button>
+            <button class="form-button cancel" type="button" @click="$emit('cancel')"> Cancel </button>
+        </div>
     </form>
 </template>
 <script>
@@ -186,4 +188,27 @@
     }
 </script>
 <style scoped>
+    .movie-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+   .buttons-container {
+        display: flex;
+        align-content: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+   }
+   .form-button {
+        width: 80px;
+   }
+   .input {
+        height: 25px;
+        border: 1px solid #888;
+   }
+   ul {
+        color: red;
+        margin: 10px 10px;
+   }
 </style>

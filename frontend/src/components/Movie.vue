@@ -136,9 +136,8 @@ export default {
     }
     .movie-card {
         display: flex;
-        position: relative;
         margin-top: 30px;
-        margin-left: 80px;
+        margin-left: 100px;
     }
     .movie-poster {
         width: 150px;
@@ -168,10 +167,9 @@ export default {
         border-radius: 20%;
     }
     .movie-buttons {
-        left: 950px;
-        top: -700px;
-        display: flex;
-        gap: 5px;
+        margin-left: 600px;
+        margin-top: 60px;
+        gap: 8px;
     }
     .movie-buttons svg {
         width: 35px;

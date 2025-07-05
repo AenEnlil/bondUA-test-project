@@ -1,16 +1,21 @@
 <template>
     <div v-if="loading"><Loader /></div>
     <div v-else>
-        <div>
+        <div class='menu-buttons'>
             <svg
-                width="32px" height="32px" viewBox="0 0 24 24"
+                class='create-button'
+                @click="showModalWithForm"
+                width="50px" height="50px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12.75 9C12.75 8.58579 12.4142 8.25 12 8.25C11.5858 8.25 11.25 8.58579 11.25 9L11.25 11.25H9C8.58579 11.25 8.25 11.5858 8.25 12C8.25 12.4142 8.58579 12.75 9 12.75H11.25V15C11.25 15.4142 11.5858 15.75 12 15.75C12.4142 15.75 12.75 15.4142 12.75 15L12.75 12.75H15C15.4142 12.75 15.75 12.4142 15.75 12C15.75 11.5858 15.4142 11.25 15 11.25H12.75V9Z"/>
+                <path d="M12 1.25C6.06294 1.25 1.25 6.06294 1.25 12C1.25 17.9371 6.06294 22.75 12 22.75C17.9371 22.75 22.75 17.9371 22.75 12C22.75 6.06294 17.9371 1.25 12 1.25ZM2.75 12C2.75 6.89137 6.89137 2.75 12 2.75C17.1086 2.75 21.25 6.89137 21.25 12C21.25 17.1086 17.1086 21.25 12 21.25C6.89137 21.25 2.75 17.1086 2.75 12Z"/>
+            </svg>
+            <svg
+                class='filter-button'
+                width="50px" height="50px" viewBox="0 0 24 24"
                 @click = 'showFilters = true'
                 xmlns="http://www.w3.org/2000/svg">
                 <path d="M4 5L10 5M10 5C10 6.10457 10.8954 7 12 7C13.1046 7 14 6.10457 14 5M10 5C10 3.89543 10.8954 3 12 3C13.1046 3 14 3.89543 14 5M14 5L20 5M4 12H16M16 12C16 13.1046 16.8954 14 18 14C19.1046 14 20 13.1046 20 12C20 10.8954 19.1046 10 18 10C16.8954 10 16 10.8954 16 12ZM8 19H20M8 19C8 17.8954 7.10457 17 6 17C4.89543 17 4 17.8954 4 19C4 20.1046 4.89543 21 6 21C7.10457 21 8 20.1046 8 19Z" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
             </svg>
-        </div>
-        <div class="create-movie-button">
-                <button @click="showModalWithForm">Add movie</button>
         </div>
         <div v-if="movies_count === 0" class='no-movies'>
             <p class="no-movies-text">Movies not found</p>
@@ -143,10 +148,8 @@
     }
     .no-movies-text{
         margin-bottom: 10px;
-    }
-    .create-movie-button {
-        margin-right: 10px;
-    }
+        font-size: 24px;
+    }`
     .movies-list {
         grid: auto-flow;
         grid-cols: 2px;
@@ -162,4 +165,20 @@
         width: 100px;
         font-size: 16px;
     }
+    .menu-buttons {
+        display: flex;
+        gap: 10px;
+        padding-top: 20px;
+        justify-content: end;
+        padding-right: 80px;
+    }
+    .create-button:hover {
+        fill: #c7ecee;
+        cursor: pointer;
+    }
+    .filter-button:hover {
+        fill: #c7ecee;
+        cursor: pointer;
+    }
+
 </style>

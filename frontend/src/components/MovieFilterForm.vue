@@ -32,8 +32,10 @@
                         placeholder="Filter by actor"
                     />
                 </div>
-                <button class="form-button" type="submit"> Send </button>
-                <button class="form-button cancel" type="button" @click="$emit('cancel')"> Cancel </button>
+                <div class='buttons-container'>
+                    <button class="form-button" type="submit"> Send </button>
+                    <button class="form-button cancel" type="button" @click="$emit('cancel')"> Cancel </button>
+                </div>
             </form>
     </div>
 </div>
@@ -108,4 +110,23 @@
         justify-content: center;
         align-items: center;
     }
+    .filter-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+   .buttons-container {
+        display: flex;
+        align-content: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+   }
+   .form-button {
+        width: 80px;
+   }
+   .input {
+        height: 25px;
+        border: 1px solid #888;
+   }
 </style>
