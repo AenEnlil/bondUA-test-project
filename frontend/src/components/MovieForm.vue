@@ -211,4 +211,10 @@
         color: red;
         margin: 10px 10px;
    }
+   ::v-deep(.multiselect__tags) {
+        height: 50px;
+        max-width: 300px;
+        overflow-x: auto;
+        white-space: nowrap;
+   }
 </style>

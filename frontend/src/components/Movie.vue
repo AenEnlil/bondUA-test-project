@@ -11,14 +11,16 @@
         <div v-if="actors.length !== 0" class="actors-dropdown">
             <details>
                 <summary>Actors</summary>
-                <ul class="actors-list">
-                    <li v-for="actor in actors" :key="actor.id">
-                        <div class='actor-info'>
-                            <img src="../assets/images/person-placeholder.jpg">
-                            {{actor.person_name}}
-                        </div>
-                    </li>
-                </ul>
+                <div class='actors-scroll-wrapper'>
+                    <ul class="actors-list">
+                        <li v-for="actor in actors" :key="actor.id">
+                            <div class='actor-info'>
+                                <img src="../assets/images/person-placeholder.jpg">
+                                {{actor.person_name}}
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </details>
         </div>
     </div>
@@ -178,5 +180,9 @@ export default {
     .movie-buttons svg:hover {
         fill: #c7ecee;
     }
+    .actors-scroll-wrapper {
+        max-width: 300px;
+        overflow-x: auto;
+}
 
 </style>
